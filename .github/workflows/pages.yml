@@ -21,6 +21,12 @@ jobs:
         with:
           node-version: '20'
 
+      # --- TEMP FIX for your build ---
+      # craco/react-scripts is expecting ajv v6. We add it in CI so the build won’t fail.
+      - name: Install ajv v6 (compat)
+        working-directory: frontend
+        run: npm install ajv@^6 --legacy-peer-deps
+
       - name: Install & Build (frontend)
         working-directory: frontend
         run: |
@@ -32,7 +38,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: frontend/dist   # If your build folder is 'build', change to frontend/build
+          path: frontend/dist   # If your build output is 'build', change to frontend/build
 
   deploy:
     needs: build
