@@ -286,6 +286,13 @@ function App() {
             </div>
 
             <div className="flex items-center space-x-2">
+              <button
+                onClick={() => setShowAdminPanel(true)}
+                className="p-2 bg-purple-600/20 hover:bg-purple-600/40 rounded-lg transition-colors"
+                title="Admin Panel"
+              >
+                <Shield size={20} className="text-purple-400" />
+              </button>
               <span className="hidden sm:inline text-sm text-gray-300">
                 {filteredChannels.length} channels
               </span>
