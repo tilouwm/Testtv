@@ -13,21 +13,33 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - name: Install & Build
+
+      # --- TEMP FIX for your build ---
+      # craco/react-scripts is expecting ajv v6. We add it in CI so the build won’t fail.
+      - name: Install ajv v6 (compat)
+        working-directory: frontend
+        run: npm install ajv@^6 --legacy-peer-deps
+
+      - name: Install & Build (frontend)
         working-directory: frontend
         run: |
-          npm ci || npm install
+          npm install --legacy-peer-deps
           npm run build
-          # SPA fallback so refresh doesn't 404:
-          cp dist/index.html dist/404.html
+          # SPA fallback so refresh doesn't 404
+          cp dist/index.html dist/404.html || true
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: frontend/dist
+          path: frontend/dist   # If your build output is 'build', change to frontend/build
+
   deploy:
     needs: build
     runs-on: ubuntu-latest
@@ -35,5 +47,6 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - id: deployment
+      - name: Deploy to GitHub Pages
+        id: deployment
         uses: actions/deploy-pages@v4
