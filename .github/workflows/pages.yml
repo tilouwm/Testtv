@@ -21,18 +21,50 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install and Build
-        working-directory: frontend
+      - name: Detect frontend location
+        id: detect
         run: |
-          npm install
-          npm run build
-          # Fix refresh 404s for SPAs
-          cp dist/index.html dist/404.html
+          set -e
+          if [ -f "frontend/package.json" ]; then
+            echo "workdir=frontend" >> $GITHUB_OUTPUT
+          elif [ -f "package.json" ]; then
+            echo "workdir=." >> $GITHUB_OUTPUT
+          else
+            echo "❌ No package.json found in repo root or frontend/."
+            exit 1
+          fi
+
+      - name: Install & Build
+        id: build
+        working-directory: ${{ steps.detect.outputs.workdir }}
+        run: |
+          set -e
+          echo "📦 Installing deps in $(pwd)"
+          npm ci || npm install
+          if npm run | grep -q " build"; then
+            echo "🏗️ Running build"
+            npm run build
+          else
+            echo "❌ No 'build' script in package.json. Add one (e.g., \"build\": \"vite build\" or \"react-scripts build\")."
+            exit 1
+          fi
+
+          # Find output folder
+          if [ -d "dist" ]; then
+            echo "outdir=dist" >> $GITHUB_OUTPUT
+            cp dist/index.html dist/404.html || true
+          elif [ -d "build" ]; then
+            echo "outdir=build" >> $GITHUB_OUTPUT
+            cp build/index.html build/404.html || true
+          else
+            echo "❌ Build succeeded but no dist/ or build/ folder found."
+            exit 1
+          fi
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: frontend/dist
+          path: ${{ steps.detect.outputs.workdir }}/${{ steps.build.outputs.outdir }}
 
   deploy:
     needs: build
