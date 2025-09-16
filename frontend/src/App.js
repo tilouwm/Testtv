@@ -49,6 +49,7 @@ function App() {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [volume, setVolume] = useState(1);
+  const [showAdminPanel, setShowAdminPanel] = useState(false);
   
   // Refs
   const videoRef = useRef(null);
