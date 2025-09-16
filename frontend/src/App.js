@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import axios from 'axios';
 import './App.css';
+import AdminPanel from './components/AdminPanel';
 import { Toaster, toast } from 'sonner';
 import { 
   Search, 
@@ -17,7 +18,8 @@ import {
   Volume2,
   VolumeX,
   Maximize,
-  Minimize
+  Minimize,
+  Shield
 } from 'lucide-react';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
