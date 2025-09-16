@@ -541,6 +541,17 @@ function App() {
           onClick={() => setSidebarOpen(false)}
         />
       )}
+
+      {/* Admin Panel */}
+      {showAdminPanel && (
+        <AdminPanel 
+          onClose={() => {
+            setShowAdminPanel(false);
+            // Refresh channels after admin changes
+            fetchChannels();
+          }} 
+        />
+      )}
     </div>
   );
 }
