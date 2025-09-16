@@ -54,7 +54,7 @@ function App() {
   // Refs
   const videoRef = useRef(null);
   const hlsRef = useRef(null);
-  const userId = 'user-' + Math.random().toString(36).substr(2, 9);
+  const userId = useMemo(() => 'user-' + Math.random().toString(36).substr(2, 9), []);
 
   // Fetch data functions
   const fetchChannels = useCallback(async () => {
